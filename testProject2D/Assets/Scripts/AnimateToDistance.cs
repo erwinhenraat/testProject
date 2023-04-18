@@ -41,10 +41,10 @@ public class AnimateToDistance : MonoBehaviour
             float elapsedNormalised = (elapsed - 0) / (duration - 0);
             
             //Move Object to target
-            //MoveToTarget(elapsedNormalised);
+            MoveToTarget(elapsedNormalised);
 
             //Scale object to target, starting scale of sprite in unity must be 1!
-            ScaleToTarget(elapsedNormalised);
+            //ScaleToTarget(elapsedNormalised);
 
             
             if (direction == 1 && elapsedNormalised >= 1) {
