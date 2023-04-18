@@ -12,6 +12,7 @@ public class AnimateToDistance : MonoBehaviour
     private Vector2 startScale;
     private bool isLerping = false;
     private float elapsed = 0;
+    private int direction = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,11 +24,19 @@ public class AnimateToDistance : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) {
+        if (Input.GetKeyDown(KeyCode.Space) && !isLerping) {
             TriggerAnimation();
         }
         if (isLerping) {
-            elapsed += Time.deltaTime;
+            if (direction > 0)
+            {
+                elapsed += Time.deltaTime;
+            }
+            else 
+            {
+                elapsed -= Time.deltaTime;           
+            }
+            
             //normalised = (value-minimum) / (maximum - minimum);
             float elapsedNormalised = (elapsed - 0) / (duration - 0);
             
@@ -37,16 +46,34 @@ public class AnimateToDistance : MonoBehaviour
             //Scale object to target, starting scale of sprite in unity must be 1!
             ScaleToTarget(elapsedNormalised);
 
-            //end lerp
-            if (elapsedNormalised >= 1)isLerping= false;
+            
+            if (direction == 1 && elapsedNormalised >= 1) {
+                //start retracting
+                direction = -1;
+
+            }
+            if (direction < 0 && elapsedNormalised <= 0) {
+                isLerping = false;
+            }               
+                
         }
-    } 
+    }
+    void TriggerAnimation()
+    {
+        direction = 1;
+        elapsed = 0;
+        isLerping = true;
+        startPoint = objectToAnimate.position;
+        startScale = objectToAnimate.localScale;
+        FaceTarget();
+    }
     void ScaleToTarget(float progress) {        
         Vector2 distance = startPoint - (Vector2)target.transform.position;
         //scale object to position
         Vector2 scale = Vector2.Lerp(startScale, new Vector2(startScale.x , distance.magnitude), progress);
         objectToAnimate.localScale = scale;
     }
+    
     void MoveToTarget(float progress)
     {
         //Move object position
@@ -64,11 +91,5 @@ public class AnimateToDistance : MonoBehaviour
         float degrees = Mathf.Atan2(dist.y, dist.x) * Mathf.Rad2Deg - 90;
         objectToAnimate.transform.rotation = Quaternion.Euler(0, 0, degrees);
     }
-    void TriggerAnimation() {
-        elapsed = 0;
-        isLerping = true;
-        startPoint = objectToAnimate.position;
-        startScale = objectToAnimate.localScale;
-        FaceTarget();
-    }
+   
 }
